@@ -1,15 +1,9 @@
-# Use the Python 3 alpine official image
-# https://hub.docker.com/_/python
-FROM python:3-alpine
+FROM python:3-slim
 
-# Create and change to the app directory.
 WORKDIR /app
 
-# Copy local code to the container image.
 COPY . .
 
-# Install project dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run the web service on container startup.
-CMD ["hypercorn", "app:app", "--bind", "::"]
+CMD ["hypercorn", "app:app", "--bind", "0.0.0.0:8000"]
