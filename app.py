@@ -1,5 +1,3 @@
-# app.py
-
 import enum
 import math
 from fastapi import FastAPI
@@ -16,10 +14,10 @@ classifier = pipeline(
     task="text-classification",
     model="phishbot/ScamLLM",
     top_k=None,
-    device=(0 if torch.cuda.is_available() else -1)
+    device=(0 if torch.cuda.is_available() else -1),
+    load_in_4bit=True
 )
 
-# Define the request body schema
 class TextInput(BaseModel):
     text: str
 
