@@ -33,6 +33,13 @@ class PredictionOutput(BaseModel):
     is_phishing: bool
     score: float
 
+@app.get("/")
+async def root():
+    return {"message": "Welcome to the Phishing Detection API!"}
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
 @app.post("/predict")
 async def predict(input: TextInput):
