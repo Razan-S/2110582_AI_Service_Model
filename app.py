@@ -23,8 +23,7 @@ classifier = pipeline(
     task="text-classification",
     model="phishbot/ScamLLM",
     top_k=None,
-    device=(0 if torch.cuda.is_available() else -1),
-    load_in_4bit=True
+    device=(0 if torch.cuda.is_available() else -1)
 )
 
 class TextInput(BaseModel):
