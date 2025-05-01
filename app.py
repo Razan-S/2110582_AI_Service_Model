@@ -7,6 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import torch
 from transformers import pipeline
+from model import load_and_infer
+import nltk
+
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('punkt_tab')
+
 
 app = FastAPI()
 
@@ -16,14 +23,6 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-)
-
-# Load the ScamLLM model pipeline
-classifier = pipeline(
-    task="text-classification",
-    model="phishbot/ScamLLM",
-    top_k=None,
-    device=(0 if torch.cuda.is_available() else -1)
 )
 
 class TextInput(BaseModel):
@@ -43,10 +42,10 @@ def health():
 
 @app.post("/predict")
 async def predict(input: TextInput):
-    result = classifier(input.text)[0]
-    is_phishing = result[1]['score'] > 0.5
-    score = result[1]['score'] if is_phishing else 1 - result[1]['score']
-    result = PredictionOutput(is_phishing=is_phishing, score=score)
+    prediction, probability = load_and_infer(input.text)
+
+    is_phishing = True if prediction == 'Spam' else False   
+    result = PredictionOutput(is_phishing=is_phishing, score=probability)
     return JSONResponse(
         content=jsonable_encoder(result),
         status_code=200,
